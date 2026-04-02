@@ -1,16 +1,84 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useMemo } from "react";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppProvider, useAppContext } from "@/context/AppContext";
+import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
+import Header from "@/components/dashboard/Header";
+import SummaryCard from "@/components/dashboard/SummaryCard";
+import BalanceChart from "@/components/dashboard/BalanceChart";
+import CategoryChart from "@/components/dashboard/CategoryChart";
+import TransactionTable from "@/components/dashboard/TransactionTable";
+import Insights from "@/components/dashboard/Insights";
+import { Wallet, TrendingUp, TrendingDown } from "lucide-react";
+import { percentChange } from "@/lib/helpers";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+/** Main dashboard content — uses AppContext for data */
+function DashboardContent() {
+  const { transactions } = useAppContext();
+
+  // Compute summary metrics
+  const summary = useMemo(() => {
+    const now = new Date();
+    const thisKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastKey = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth() + 1).padStart(2, "0")}`;
+
+    const totalIncome = transactions.filter((t) => t.type === "income").reduce((s, t) => s + t.amount, 0);
+    const totalExpenses = transactions.filter((t) => t.type === "expense").reduce((s, t) => s + t.amount, 0);
+    const balance = totalIncome - totalExpenses;
+
+    const thisIncome = transactions.filter((t) => t.type === "income" && t.date.startsWith(thisKey)).reduce((s, t) => s + t.amount, 0);
+    const lastIncome = transactions.filter((t) => t.type === "income" && t.date.startsWith(lastKey)).reduce((s, t) => s + t.amount, 0);
+
+    const thisExpenses = transactions.filter((t) => t.type === "expense" && t.date.startsWith(thisKey)).reduce((s, t) => s + t.amount, 0);
+    const lastExpenses = transactions.filter((t) => t.type === "expense" && t.date.startsWith(lastKey)).reduce((s, t) => s + t.amount, 0);
+
+    return {
+      balance,
+      totalIncome,
+      totalExpenses,
+      incomeTrend: percentChange(thisIncome, lastIncome),
+      expenseTrend: percentChange(thisExpenses, lastExpenses),
+      balanceTrend: percentChange(thisIncome - thisExpenses, lastIncome - lastExpenses),
+    };
+  }, [transactions]);
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="flex-1 flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+        {/* Summary cards */}
+        <div id="dashboard" className="grid gap-4 sm:grid-cols-3">
+          <SummaryCard title="Total Balance" value={summary.balance} trend={summary.balanceTrend} icon={Wallet} />
+          <SummaryCard title="Total Income" value={summary.totalIncome} trend={summary.incomeTrend} icon={TrendingUp} variant="income" />
+          <SummaryCard title="Total Expenses" value={summary.totalExpenses} trend={summary.expenseTrend} icon={TrendingDown} variant="expense" />
+        </div>
+
+        {/* Charts side by side */}
+        <div id="charts" className="grid gap-4 lg:grid-cols-2">
+          <BalanceChart />
+          <CategoryChart />
+        </div>
+
+        {/* Transactions table */}
+        <TransactionTable />
+
+        {/* Insights */}
+        <Insights />
+      </main>
     </div>
   );
-};
+}
 
-const Index = PlaceholderIndex;
-
-export default Index;
+/** Index page wraps everything in providers */
+export default function Index() {
+  return (
+    <AppProvider>
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full">
+          <DashboardSidebar />
+          <DashboardContent />
+        </div>
+      </SidebarProvider>
+    </AppProvider>
+  );
+}
