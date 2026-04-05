@@ -15,7 +15,6 @@ import { percentChange } from "@/lib/helpers";
 function DashboardContent() {
   const { transactions } = useAppContext();
 
-  // Compute summary metrics
   const summary = useMemo(() => {
     const now = new Date();
     const thisKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
@@ -43,26 +42,23 @@ function DashboardContent() {
   }, [transactions]);
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen">
+    <div className="flex-1 flex flex-col min-h-screen min-w-0">
       <Header />
-      <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-        {/* Summary cards */}
-        <div id="dashboard" className="grid gap-4 sm:grid-cols-3">
+      <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+        {/* Summary cards — 1 col on mobile, 3 on sm+ */}
+        <div id="dashboard" className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
           <SummaryCard title="Total Balance" value={summary.balance} trend={summary.balanceTrend} icon={Wallet} />
           <SummaryCard title="Total Income" value={summary.totalIncome} trend={summary.incomeTrend} icon={TrendingUp} variant="income" />
           <SummaryCard title="Total Expenses" value={summary.totalExpenses} trend={summary.expenseTrend} icon={TrendingDown} variant="expense" />
         </div>
 
-        {/* Charts side by side */}
-        <div id="charts" className="grid gap-4 lg:grid-cols-2">
+        {/* Charts — stack on mobile, side by side on lg */}
+        <div id="charts" className="grid gap-3 sm:gap-4 grid-cols-1 lg:grid-cols-2">
           <BalanceChart />
           <CategoryChart />
         </div>
 
-        {/* Transactions table */}
         <TransactionTable />
-
-        {/* Insights */}
         <Insights />
       </main>
     </div>
