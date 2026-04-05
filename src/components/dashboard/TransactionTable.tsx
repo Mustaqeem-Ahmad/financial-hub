@@ -93,9 +93,9 @@ export default function TransactionTable() {
 
   return (
     <div id="transactions" className="space-y-4">
-      {/* Filter bar */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[200px]">
+      {/* Filter bar — stacks on mobile */}
+      <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3">
+        <div className="relative flex-1 min-w-0">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search transactions…"
@@ -107,7 +107,7 @@ export default function TransactionTable() {
         </div>
 
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-[160px]" aria-label="Filter by category">
+          <SelectTrigger className="w-full sm:w-[160px]" aria-label="Filter by category">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -120,24 +120,26 @@ export default function TransactionTable() {
           </SelectContent>
         </Select>
 
-        <Input
-          type="date"
-          value={dateFrom}
-          onChange={(e) => setDateFrom(e.target.value)}
-          className="w-[140px]"
-          aria-label="Date from"
-        />
-        <Input
-          type="date"
-          value={dateTo}
-          onChange={(e) => setDateTo(e.target.value)}
-          className="w-[140px]"
-          aria-label="Date to"
-        />
+        <div className="flex gap-2">
+          <Input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            className="flex-1 sm:w-[140px]"
+            aria-label="Date from"
+          />
+          <Input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            className="flex-1 sm:w-[140px]"
+            aria-label="Date to"
+          />
+        </div>
 
         {/* Admin-only Add button */}
         {role === "admin" && (
-          <Button onClick={openAdd} size="sm" className="gap-1" aria-label="Add transaction">
+          <Button onClick={openAdd} size="sm" className="gap-1 w-full sm:w-auto" aria-label="Add transaction">
             <Plus className="h-4 w-4" /> Add
           </Button>
         )}
@@ -154,13 +156,13 @@ export default function TransactionTable() {
                 </button>
               </TableHead>
               <TableHead>Description</TableHead>
-              <TableHead>Category</TableHead>
+              <TableHead className="hidden sm:table-cell">Category</TableHead>
               <TableHead>
                 <button onClick={() => toggleSort("amount")} className="flex items-center gap-1 hover:text-foreground">
                   Amount <ArrowUpDown className="h-3 w-3" />
                 </button>
               </TableHead>
-              <TableHead>Type</TableHead>
+              <TableHead className="hidden md:table-cell">Type</TableHead>
               {role === "admin" && <TableHead className="w-10" />}
             </TableRow>
           </TableHeader>
@@ -174,17 +176,17 @@ export default function TransactionTable() {
             ) : (
               filtered.map((txn) => (
                 <TableRow key={txn.id}>
-                  <TableCell className="text-sm">{formatDate(txn.date)}</TableCell>
-                  <TableCell className="text-sm font-medium">{txn.description}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-sm whitespace-nowrap">{formatDate(txn.date)}</TableCell>
+                  <TableCell className="text-sm font-medium max-w-[150px] truncate">{txn.description}</TableCell>
+                  <TableCell className="hidden sm:table-cell">
                     <span className="inline-block rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium">
                       {txn.category}
                     </span>
                   </TableCell>
-                  <TableCell className={`text-sm font-mono font-medium ${txn.type === "income" ? "text-success" : "text-destructive"}`}>
+                  <TableCell className={`text-sm font-mono font-medium whitespace-nowrap ${txn.type === "income" ? "text-success" : "text-destructive"}`}>
                     {txn.type === "income" ? "+" : "-"}{formatCurrency(txn.amount)}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <span className={`text-xs font-medium capitalize ${txn.type === "income" ? "text-success" : "text-destructive"}`}>
                       {txn.type}
                     </span>
