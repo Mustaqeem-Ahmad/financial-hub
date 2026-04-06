@@ -59,8 +59,8 @@ export default function CategoryChart() {
               , _jsxDEV(Tooltip, {
                 formatter: (value) => formatCurrency(value),
                 contentStyle: {
-                  backgroundColor: "hsl(var(--card))",
-                  color: "hsl(var(--card-foreground))",
+                  backgroundColor: "hsl(var(--popover))",
+                  color: "hsl(var(--popover-foreground))",
                   border: "1px solid hsl(var(--border))",
                   borderRadius: 8,
                   fontSize: 12,
