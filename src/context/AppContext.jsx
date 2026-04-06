@@ -1,30 +1,8 @@
-const _jsxFileName = "src/context/AppContext.tsx";import {jsxDEV as _jsxDEV} from "react/jsx-dev-runtime";import React, { createContext, useContext, useState, useCallback, } from "react";
-
-
-// --- Types ---
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import React, { createContext, useContext, useState, useCallback } from "react";
 
 const AppContext = createContext(null);
 
-// --- Seed data: 12 months of realistic transactions ---
+/* Seed data: 12 months of realistic transactions */
 function generateSeedData() {
   const data = [];
   const now = new Date();
@@ -44,11 +22,9 @@ function generateSeedData() {
 
   let id = 1;
 
-  // Generate transactions for each of the last 12 months
   for (let m = 11; m >= 0; m--) {
     const month = new Date(now.getFullYear(), now.getMonth() - m, 1);
 
-    // 1-2 income entries per month
     data.push({
       id: String(id++),
       date: new Date(month.getFullYear(), month.getMonth(), 1).toISOString().split("T")[0],
@@ -69,7 +45,6 @@ function generateSeedData() {
       });
     }
 
-    // 3-5 expense entries per month
     const numExpenses = 3 + Math.floor(Math.random() * 3);
     for (let e = 0; e < numExpenses; e++) {
       const [desc, cat] = expenseDescs[Math.floor(Math.random() * expenseDescs.length)];
@@ -87,28 +62,22 @@ function generateSeedData() {
   return data.sort((a, b) => b.date.localeCompare(a.date));
 }
 
-// --- Provider ---
 export function AppProvider({ children }) {
   const [transactions, setTransactions] = useState(generateSeedData);
   const [role, setRole] = useState("admin");
 
   const addTransaction = useCallback((t) => {
-    setTransactions((prev) => [
-      { ...t, id: String(Date.now()) },
-      ...prev,
-    ]);
+    setTransactions((prev) => [{ ...t, id: String(Date.now()) }, ...prev]);
   }, []);
 
   const updateTransaction = useCallback((id, t) => {
-    setTransactions((prev) =>
-      prev.map((tx) => (tx.id === id ? { ...t, id } : tx))
-    );
+    setTransactions((prev) => prev.map((tx) => (tx.id === id ? { ...t, id } : tx)));
   }, []);
 
   return (
-    _jsxDEV(AppContext.Provider, { value: { transactions, role, setRole, addTransaction, updateTransaction }, children: 
-      children
-    }, void 0, false, {fileName: _jsxFileName, lineNumber: 109}, this)
+    <AppContext.Provider value={{ transactions, role, setRole, addTransaction, updateTransaction }}>
+      {children}
+    </AppContext.Provider>
   );
 }
 

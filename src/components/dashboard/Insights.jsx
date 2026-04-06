@@ -1,9 +1,8 @@
-const _jsxFileName = "src/components/dashboard/Insights.tsx";import {jsxDEV as _jsxDEV} from "react/jsx-dev-runtime"; function _nullishCoalesce(lhs, rhsFn) { if (lhs != null) { return lhs; } else { return rhsFn(); } } function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }import { useMemo } from "react";
+import { useMemo } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { formatCurrency, percentChange } from "@/lib/helpers";
 import { TrendingUp, TrendingDown, ShoppingBag, CalendarDays } from "lucide-react";
 
-/** Simple insights section showing key spending stats */
 export default function Insights() {
   const { transactions } = useAppContext();
 
@@ -21,7 +20,6 @@ export default function Insights() {
       .filter((t) => t.type === "expense" && t.date.startsWith(lastMonthKey))
       .reduce((s, t) => s + t.amount, 0);
 
-    // Top spending category
     const catMap = {};
     transactions
       .filter((t) => t.type === "expense")
@@ -30,14 +28,12 @@ export default function Insights() {
       });
     const topCategory = Object.entries(catMap).sort((a, b) => b[1] - a[1])[0];
 
-    const totalTransactions = transactions.length;
-
     return {
       thisMonthExpenses,
       lastMonthExpenses,
       expenseChange: percentChange(thisMonthExpenses, lastMonthExpenses),
       topCategory: topCategory ? { name: topCategory[0], amount: topCategory[1] } : null,
-      totalTransactions,
+      totalTransactions: transactions.length,
     };
   }, [transactions]);
 
@@ -45,7 +41,7 @@ export default function Insights() {
     {
       icon: ShoppingBag,
       title: "Top Spending Category",
-      value: _nullishCoalesce(_optionalChain([stats, 'access', _ => _.topCategory, 'optionalAccess', _2 => _2.name]), () => ( "N/A")),
+      value: stats.topCategory?.name ?? "N/A",
       sub: stats.topCategory ? formatCurrency(stats.topCategory.amount) + " total" : "",
     },
     {
@@ -63,25 +59,22 @@ export default function Insights() {
   ];
 
   return (
-    _jsxDEV('div', { id: "insights", className: "space-y-3", children: [
-      _jsxDEV('h3', { className: "text-sm font-semibold" , children: "Insights"}, void 0, false, {fileName: _jsxFileName, lineNumber: 67}, this)
-      , _jsxDEV('div', { className: "grid gap-3 sm:grid-cols-3"  , children: 
-        cards.map((card) => (
-          _jsxDEV('div', {
-
-            className: "flex items-start gap-3 rounded-xl border bg-card p-4 shadow-sm animate-fade-in"        ,
- children: [
-            _jsxDEV('div', { className: "rounded-lg bg-accent p-2"  , children: 
-              _jsxDEV(card.icon, { className: "h-4 w-4 text-primary"  ,}, void 0, false, {fileName: _jsxFileName, lineNumber: 75}, this )
-            }, void 0, false, {fileName: _jsxFileName, lineNumber: 74}, this)
-            , _jsxDEV('div', { children: [
-              _jsxDEV('p', { className: "text-xs text-muted-foreground" , children: card.title}, void 0, false, {fileName: _jsxFileName, lineNumber: 78}, this)
-              , _jsxDEV('p', { className: "text-lg font-bold" , children: card.value}, void 0, false, {fileName: _jsxFileName, lineNumber: 79}, this)
-              , _jsxDEV('p', { className: "text-xs text-muted-foreground" , children: card.sub}, void 0, false, {fileName: _jsxFileName, lineNumber: 80}, this)
-            ]}, void 0, true, {fileName: _jsxFileName, lineNumber: 77}, this)
-          ]}, card.title, true, {fileName: _jsxFileName, lineNumber: 70}, this)
-        ))
-      }, void 0, false, {fileName: _jsxFileName, lineNumber: 68}, this)
-    ]}, void 0, true, {fileName: _jsxFileName, lineNumber: 66}, this)
+    <div id="insights" className="space-y-3">
+      <h3 className="text-sm font-semibold">Insights</h3>
+      <div className="grid gap-3 sm:grid-cols-3">
+        {cards.map((card) => (
+          <div key={card.title} className="flex items-start gap-3 rounded-xl border bg-card p-4 shadow-sm animate-fade-in">
+            <div className="rounded-lg bg-accent p-2">
+              <card.icon className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">{card.title}</p>
+              <p className="text-lg font-bold">{card.value}</p>
+              <p className="text-xs text-muted-foreground">{card.sub}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

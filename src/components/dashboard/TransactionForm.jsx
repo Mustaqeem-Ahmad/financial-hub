@@ -1,4 +1,4 @@
-const _jsxFileName = "src/components/dashboard/TransactionForm.tsx";import {jsxDEV as _jsxDEV} from "react/jsx-dev-runtime";import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,16 +15,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CATEGORIES, } from "@/lib/helpers";
-import { useAppContext, } from "@/context/AppContext";
+import { CATEGORIES } from "@/lib/helpers";
+import { useAppContext } from "@/context/AppContext";
 
-
-
-
-
-
-
-/** Modal form to add or edit a transaction */
 export default function TransactionForm({ open, onClose, editTransaction }) {
   const { addTransaction, updateTransaction } = useAppContext();
 
@@ -34,7 +27,6 @@ export default function TransactionForm({ open, onClose, editTransaction }) {
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("expense");
 
-  // Pre-fill form when editing
   useEffect(() => {
     if (editTransaction) {
       setDate(editTransaction.date);
@@ -53,13 +45,7 @@ export default function TransactionForm({ open, onClose, editTransaction }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    const payload = {
-      date,
-      description,
-      category,
-      amount: Number(amount),
-      type,
-    };
+    const payload = { date, description, category, amount: Number(amount), type };
 
     if (editTransaction) {
       updateTransaction(editTransaction.id, payload);
@@ -70,99 +56,60 @@ export default function TransactionForm({ open, onClose, editTransaction }) {
   }
 
   return (
-    _jsxDEV(Dialog, { open: open, onOpenChange: (v) => !v && onClose(), children: 
-      _jsxDEV(DialogContent, { className: "sm:max-w-md", children: [
-        _jsxDEV(DialogHeader, { children: 
-          _jsxDEV(DialogTitle, { children: editTransaction ? "Edit Transaction" : "Add Transaction"}, void 0, false, {fileName: _jsxFileName, lineNumber: 76}, this)
-        }, void 0, false, {fileName: _jsxFileName, lineNumber: 75}, this)
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{editTransaction ? "Edit Transaction" : "Add Transaction"}</DialogTitle>
+        </DialogHeader>
 
-        , _jsxDEV('form', { onSubmit: handleSubmit, className: "space-y-4 pt-2" , children: [
-          /* Date */
-          _jsxDEV('div', { className: "space-y-1.5", children: [
-            _jsxDEV(Label, { htmlFor: "txn-date", children: "Date"}, void 0, false, {fileName: _jsxFileName, lineNumber: 82}, this)
-            , _jsxDEV(Input, {
-              id: "txn-date",
-              type: "date",
-              value: date,
-              onChange: (e) => setDate(e.target.value),
-              required: true,}, void 0, false, {fileName: _jsxFileName, lineNumber: 83}, this
-            )
-          ]}, void 0, true, {fileName: _jsxFileName, lineNumber: 81}, this)
+        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="txn-date">Date</Label>
+            <Input id="txn-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+          </div>
 
-          /* Description */
-          , _jsxDEV('div', { className: "space-y-1.5", children: [
-            _jsxDEV(Label, { htmlFor: "txn-desc", children: "Description"}, void 0, false, {fileName: _jsxFileName, lineNumber: 94}, this)
-            , _jsxDEV(Input, {
-              id: "txn-desc",
-              value: description,
-              onChange: (e) => setDescription(e.target.value),
-              placeholder: "e.g. Coffee at Blue Bottle"    ,
-              required: true,}, void 0, false, {fileName: _jsxFileName, lineNumber: 95}, this
-            )
-          ]}, void 0, true, {fileName: _jsxFileName, lineNumber: 93}, this)
+          <div className="space-y-1.5">
+            <Label htmlFor="txn-desc">Description</Label>
+            <Input id="txn-desc" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="e.g. Coffee at Blue Bottle" required />
+          </div>
 
-          /* Category */
-          , _jsxDEV('div', { className: "space-y-1.5", children: [
-            _jsxDEV(Label, { children: "Category"}, void 0, false, {fileName: _jsxFileName, lineNumber: 106}, this)
-            , _jsxDEV(Select, { value: category, onValueChange: (v) => setCategory(v ), children: [
-              _jsxDEV(SelectTrigger, { 'aria-label': "Select category" , children: 
-                _jsxDEV(SelectValue, {}, void 0, false, {fileName: _jsxFileName, lineNumber: 109}, this )
-              }, void 0, false, {fileName: _jsxFileName, lineNumber: 108}, this)
-              , _jsxDEV(SelectContent, { children: 
-                CATEGORIES.map((c) => (
-                  _jsxDEV(SelectItem, { value: c, children: 
-                    c
-                  }, c, false, {fileName: _jsxFileName, lineNumber: 113}, this)
-                ))
-              }, void 0, false, {fileName: _jsxFileName, lineNumber: 111}, this)
-            ]}, void 0, true, {fileName: _jsxFileName, lineNumber: 107}, this)
-          ]}, void 0, true, {fileName: _jsxFileName, lineNumber: 105}, this)
+          <div className="space-y-1.5">
+            <Label>Category</Label>
+            <Select value={category} onValueChange={(v) => setCategory(v)}>
+              <SelectTrigger aria-label="Select category">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {CATEGORIES.map((c) => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-          /* Amount */
-          , _jsxDEV('div', { className: "space-y-1.5", children: [
-            _jsxDEV(Label, { htmlFor: "txn-amount", children: "Amount ($)" }, void 0, false, {fileName: _jsxFileName, lineNumber: 123}, this)
-            , _jsxDEV(Input, {
-              id: "txn-amount",
-              type: "number",
-              min: "0.01",
-              step: "0.01",
-              value: amount,
-              onChange: (e) => setAmount(e.target.value),
-              placeholder: "0.00",
-              required: true,}, void 0, false, {fileName: _jsxFileName, lineNumber: 124}, this
-            )
-          ]}, void 0, true, {fileName: _jsxFileName, lineNumber: 122}, this)
+          <div className="space-y-1.5">
+            <Label htmlFor="txn-amount">Amount ($)</Label>
+            <Input id="txn-amount" type="number" min="0.01" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00" required />
+          </div>
 
-          /* Type radio */
-          , _jsxDEV('div', { className: "space-y-1.5", children: [
-            _jsxDEV(Label, { children: "Type"}, void 0, false, {fileName: _jsxFileName, lineNumber: 138}, this)
-            , _jsxDEV('div', { className: "flex gap-4" , children: 
-              (["income", "expense"] ).map((t) => (
-                _jsxDEV('label', { className: "flex items-center gap-2 cursor-pointer text-sm"    , children: [
-                  _jsxDEV('input', {
-                    type: "radio",
-                    name: "txn-type",
-                    value: t,
-                    checked: type === t,
-                    onChange: () => setType(t),
-                    className: "accent-primary",}, void 0, false, {fileName: _jsxFileName, lineNumber: 142}, this
-                  )
-                  , _jsxDEV('span', { className: "capitalize", children: t}, void 0, false, {fileName: _jsxFileName, lineNumber: 150}, this)
-                ]}, t, true, {fileName: _jsxFileName, lineNumber: 141}, this)
-              ))
-            }, void 0, false, {fileName: _jsxFileName, lineNumber: 139}, this)
-          ]}, void 0, true, {fileName: _jsxFileName, lineNumber: 137}, this)
+          <div className="space-y-1.5">
+            <Label>Type</Label>
+            <div className="flex gap-4">
+              {["income", "expense"].map((t) => (
+                <label key={t} className="flex items-center gap-2 cursor-pointer text-sm">
+                  <input type="radio" name="txn-type" value={t} checked={type === t} onChange={() => setType(t)} className="accent-primary" />
+                  <span className="capitalize">{t}</span>
+                </label>
+              ))}
+            </div>
+          </div>
 
-          , _jsxDEV('div', { className: "flex justify-end gap-2 pt-2"   , children: [
-            _jsxDEV(Button, { type: "button", variant: "outline", onClick: onClose, children: "Cancel"
-
-            }, void 0, false, {fileName: _jsxFileName, lineNumber: 157}, this)
-            , _jsxDEV(Button, { type: "submit", children: 
-              editTransaction ? "Save Changes" : "Add Transaction"
-            }, void 0, false, {fileName: _jsxFileName, lineNumber: 160}, this)
-          ]}, void 0, true, {fileName: _jsxFileName, lineNumber: 156}, this)
-        ]}, void 0, true, {fileName: _jsxFileName, lineNumber: 79}, this)
-      ]}, void 0, true, {fileName: _jsxFileName, lineNumber: 74}, this)
-    }, void 0, false, {fileName: _jsxFileName, lineNumber: 73}, this)
+          <div className="flex justify-end gap-2 pt-2">
+            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+            <Button type="submit">{editTransaction ? "Save Changes" : "Add Transaction"}</Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
